@@ -1,0 +1,2 @@
+Path param (/{id}) → định danh resource cụ thể
+Query param (?x=) → filtering/search/paging

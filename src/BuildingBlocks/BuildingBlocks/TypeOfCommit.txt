@@ -1,0 +1,49 @@
+feat(catalog): add create product endpoint
+fix(catalog): validate null category id
+refactor(catalog): extract product repository
+chore(docker): add docker compose configuration
+docs(readme): add setup instructions
+test(catalog): add create product handler tests
+
+feat : new feature
+fix: bug fix
+refactor: fix structure/code but not change behavior
+chore : Infracture/config/tooling
+
+
+Best practice thật sự:
+
+Commit theo:
+
+“logical unit of work”
+
+BAD
+feat: complete catalog service
+
+=> 300 files changed.
+
+GOOD
+feat(catalog): add create product endpoint
+
+sau đó:
+
+feat(catalog): add get products endpoint
+------
+Commit flow
+feat(catalog): setup minimal api project
+
+feat(catalog): add product entity model
+
+feat(catalog): implement create product command
+
+feat(catalog): implement get products query
+
+feat(catalog): implement update product command
+
+feat(catalog): implement delete product command
+
+refactor(catalog): extract endpoint registration
+
+chore(catalog): add dockerfile
+
+fix(catalog): validate duplicate product names

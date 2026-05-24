@@ -1,0 +1,57 @@
+1) ports: - "6060:6060" có “auto publish” ra host không?
+Có. Trong docker-compose, cấu hình:
+
+yaml
+
+
+
+ports:
+  - "6060:6060"
+tương đương với lệnh:
+
+bash
+
+
+
+docker run -p 6060:6060 ...
+Nó sẽ:
+
+Publish port 6060 của container ra port 6060 trên máy host (laptop của bạn).
+Vì vậy, từ máy bạn truy cập được:
+http://localhost:6060 ✅
+Điều kiện để truy cập được:
+
+App trong container phải listen trên port 6060 và bind ra 0.0.0.0 (không phải chỉ 127.0.0.1 trong container).
+Ví dụ Node/Express phải app.listen(6060, "0.0.0.0") hoặc không chỉ định host (tuỳ framework).
+Nếu app chỉ bind 127.0.0.1 trong container thì port có publish cũng vẫn khó vào.
+2) {containername}:6060 đúng trong trường hợp nào?
+Bạn nói đúng: http://{containername}:6060 chủ yếu đúng trong môi trường nội bộ giữa các container cùng network của Docker.
+
+Ví dụ đúng:
+Container A gọi container B:
+http://serviceB:6060 ✅ (nếu cùng docker network / cùng compose project)
+Ví dụ không đúng (thường gặp):
+Máy host (laptop) mở browser gõ:
+http://serviceB:6060 ❌ (thường không resolve được DNS tên container)
+Trên host, cách “chuẩn” vẫn là:
+
+http://localhost:6060 (nếu bạn publish port)
+hoặc http://<IP của host>:6060 nếu máy khác trong LAN truy cập vào host
+3) Phân biệt nhanh expose vs ports trong compose (rất hay nhầm)
+ports: = mở ra cho host truy cập (publish)
+expose: = chỉ “phơi” cho các container khác trong cùng network (không publish ra host)
+Ví dụ:
+
+yaml
+
+
+
+expose:
+  - "6060"
+→ Host không vào được localhost:6060, nhưng container khác trong cùng network có thể gọi http://tên-service:6060.
+
+Kết luận theo câu bạn chốt:
+
+ports: "6060:6060" → bạn connect được localhost:6060 từ laptop ✅
+{containername}:6060 → đúng cho container-to-container trong cùng network ✅ (host thì thường không dùng cách này)
+Nếu bạn muốn, bạn paste file docker-compose.yml (phần service liên quan) + app bạn chạy bằng gì (Node/Java/.NET/Go…) mình chỉ bạn check nhanh điểm “bind 0.0.0.0” để tránh lỗi publish port mà vẫn không vào được.

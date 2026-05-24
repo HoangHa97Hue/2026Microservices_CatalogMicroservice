@@ -1,0 +1,13 @@
+services:
+  catalogdb:
+    container_name: catalogdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CatalogDb
+    restart: always
+    ports:
+      - "5432:5432" #the left 5432 is : we will redirecting the 5432 to our local environment
+    volumes:
+      - postgres_catalog:/var/lib/postgresql/data
+# after defining the PostgresSQL override configuration, => should configure connection string in aoolicationsetting.json in catalog.API project

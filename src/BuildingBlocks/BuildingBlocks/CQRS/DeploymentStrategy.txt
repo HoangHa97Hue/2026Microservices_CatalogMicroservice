@@ -1,0 +1,15 @@
+2 stage cần lưu ý 
+-Deployment 1
+
+CLIENT  => (Local Development Machine (Asp.net app)) => (DOCKER COMPOSE BACKING SERVICES (PostgreSQL))
+
+this settup allows us to develop and test microservices locally while connecting to containerized backing services ( in this case catalog using PostgreSQL database as backing services)
+
+-Deployment 2
+CLIENT => (DOCKER COMPOSE ALL Microservices + Backend Services)
+
+this is a comprehensive setup , stimulates a more production like environment allowing for through end to end testing
+=> should orcestrate all microservices with Docker compose and test inside of the full DOcker environment with end to end perspective
+
+-Deployment 3 ( bonus)
+deploys all microservices to kubernete, cloud eks,...
