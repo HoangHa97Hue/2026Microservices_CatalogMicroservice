@@ -1,0 +1,138 @@
+when face a new feature/framework:
+-Instead of asking "what is this syntax"
+
+try:
++ What problem its trying to solve?
++ What pattern is it trying to implement?
++Tradeoff:
++Goals
++Benefits
+
+for example: 
+CQRS(Mediator) pipeline behavior:
+
+-Problem: (duplicated cross-cutting concerns) We have cross cutting concerns that we want to apply to all our handlers (ex: logging, validation, performance monitoring, etc) 
+-Pattern: middleware + decorator
+-Goal: separator of concerns, single responsibility principle, open/closed principle
+-Benefits: maintainable code, scalibility
+
+
+
+MediatR Pipeline có phải Decorator Pattern không?
+==>Nó IMPLEMENT ý tưởng decorator pattern trong request pipeline.
+
+--------------------------
+
+thế nào là cross cutting concern?
+
+Cross-cutting concerns là gì?
+
+Là những thứ:
+
+không thuộc business logic
+nhưng xuất hiện khắp nơi
+
+Ví dụ:
+
+Concern	Có ở nhiều nơi không
+Validation	Có
+Logging	Có
+Authorization	Có
+Retry	Có
+Metrics	Có
+Transaction	Có
+
+Chúng “cross” qua toàn hệ thống.
+
+Nên gọi là:
+
+cross-cutting concerns
+
+
+------------------------------
+về bản chất , CQRS pipeline behavior là một implementation của pattern middleware + decorator.
+
+Ví dụ NestJS:
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler) {
+
+    console.log("Before");
+
+    return next.handle().pipe(
+      tap(() => console.log("After"))
+    );
+  }
+}
+
+
+MediatR
+public async Task<TResponse> Handle(
+    TRequest request,
+    RequestHandlerDelegate<TResponse> next)
+{
+    Console.WriteLine("Before");
+
+    var response = await next();
+
+    Console.WriteLine("After");
+
+    return response;
+}
+
+GOlang
+
+Đây là handler gốc
+func Hello(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "hello")
+}
+
+Giờ ta viết Logging decorator
+func Logging(next http.HandlerFunc) http.HandlerFunc {
+
+    return func(w http.ResponseWriter, r *http.Request) {
+
+        fmt.Println("Before")
+
+        next(w, r)
+
+        fmt.Println("After")
+    }
+}
+
+ Dùng thế này
+http.HandleFunc("/", Logging(Hello))
+
++ Flow thực tế
+Request
+ -> Logging
+     -> Hello
+
+
+Giờ nhìn lại:
+Logging(Hello)
+
+Nó chính là:
+
+Decorator(
+    Original
+)
+
+
+===>
+Senior engineer nhìn theo flow abstraction
+
+Không nhìn syntax.
+
+Senior thấy:
+
+before
+call next
+after
+
+là biết ngay:
+
+middleware
+interceptor
+decorator chain

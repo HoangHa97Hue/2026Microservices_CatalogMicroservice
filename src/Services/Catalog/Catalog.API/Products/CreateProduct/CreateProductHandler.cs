@@ -4,7 +4,21 @@
         : ICommand<CreateProductResult>;  
 
     public record CreateProductResult(Guid Id);
-    internal class CreateProductHandler(IDocumentSession session 
+
+    public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+    {
+        public CreateProductCommandValidator()
+        {
+            RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+            RuleFor(x => x.Category).NotEmpty().WithMessage("Category is required");
+            //RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+            RuleFor(x => x.ImageFile).NotEmpty().WithMessage("ImageFile is required");
+            RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
+        }
+    }
+
+    internal class CreateProductHandler(IDocumentSession session,
+        ILogger<CreateProductHandler> logger
         //,IValidator<CreateProductCommand> validator  // dung directi như vậy khiến lặp lại ở các handler khác, nên ta sẽ tạo 1 pipeline để xử lý validation
         ) : ICommandHandler<CreateProductCommand, CreateProductResult> //IDocumentSession la lop interface cua Marten de thao tac voi database, no se duoc inject vao qua constructor
     {
@@ -22,6 +36,7 @@
             //}
 
             //return createproductresult with the generated id
+            logger.LogInformation("CreateProductCommandHandler called with  a new product with {@Command}", command.Name);
             var product = new Product
             {
                 Name = command.Name,
