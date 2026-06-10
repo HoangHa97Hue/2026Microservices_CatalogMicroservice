@@ -17,10 +17,9 @@
         }
     }
 
-    internal class CreateProductHandler(IDocumentSession session,
-        ILogger<CreateProductHandler> logger
+    internal class CreateProductHandler(IDocumentSession session)
         //,IValidator<CreateProductCommand> validator  // dung directi như vậy khiến lặp lại ở các handler khác, nên ta sẽ tạo 1 pipeline để xử lý validation
-        ) : ICommandHandler<CreateProductCommand, CreateProductResult> //IDocumentSession la lop interface cua Marten de thao tac voi database, no se duoc inject vao qua constructor
+        : ICommandHandler<CreateProductCommand, CreateProductResult> //IDocumentSession la lop interface cua Marten de thao tac voi database, no se duoc inject vao qua constructor
     {
         public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
@@ -36,7 +35,6 @@
             //}
 
             //return createproductresult with the generated id
-            logger.LogInformation("CreateProductCommandHandler called with  a new product with {@Command}", command.Name);
             var product = new Product
             {
                 Name = command.Name,

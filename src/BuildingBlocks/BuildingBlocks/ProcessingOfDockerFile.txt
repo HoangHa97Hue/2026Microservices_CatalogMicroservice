@@ -1,0 +1,220 @@
+1. Một ứng dụng .NET muốn chạy cần gì?
+
+Ví dụ project của bạn:
+
+Catalog.API.csproj
+
+Khi build xong sẽ sinh ra:
+
+Catalog.API.dll
+BuildingBlocks.dll
+Newtonsoft.Json.dll
+...
+
+và rất nhiều DLL khác từ NuGet.
+
+Container muốn chạy được thì phải có:
+
+DLL của chính project (Catalog.API.dll)
+DLL của các project reference (BuildingBlocks.dll)
+DLL của các package NuGet
+.NET Runtime (ASP.NET Runtime)
+2. dotnet restore làm gì?
+
+Dòng này:
+
+RUN dotnet restore "./Services/Catalog/Catalog.API/Catalog.API.csproj"
+
+Nó đọc:
+
+<PackageReference Include="..." />
+<ProjectReference Include="..." />
+
+rồi tải toàn bộ package NuGet về.
+
+Ví dụ:
+
+<PackageReference Include="MediatR" />
+<PackageReference Include="MassTransit" />
+
+sẽ được download vào cache của Docker layer.
+
+Lúc này:
+
+source code: có
+nuget package: có
+dll: chưa có
+3. dotnet build làm gì?
+RUN dotnet build "./Catalog.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+Lúc này compiler bắt đầu:
+
+public class Product
+{
+}
+
+↓
+
+Product.dll
+
+Tất cả source code được biên dịch thành IL code trong DLL.
+
+Kết quả:
+
+/app/build
+    Catalog.API.dll
+    BuildingBlocks.dll
+    ...
+4. dotnet publish làm gì?
+
+Đây là bước nhiều người mới học hay nhầm với build.
+
+RUN dotnet publish "./Catalog.API.csproj"
+
+Publish = chuẩn bị một folder có thể đem đi chạy.
+
+Nó lấy:
+
+DLL project
+DLL dependencies
+file config
+runtime assets
+
+gom hết vào:
+
+/app/publish
+
+Ví dụ:
+
+/app/publish
+
+Catalog.API.dll
+BuildingBlocks.dll
+MassTransit.dll
+MediatR.dll
+appsettings.json
+...
+
+Folder này gần như đã "self-contained" cho việc deploy.
+
+5. Vậy DLL được copy sang container cuối cùng ở đâu?
+
+Đây là dòng quan trọng nhất:
+
+COPY --from=publish /app/publish .
+
+Nghĩa là:
+
+Lấy toàn bộ file trong stage publish
+
+copy sang image cuối cùng (final).
+
+Tưởng tượng:
+
+Publish stage
+/app/publish
+
+Catalog.API.dll
+BuildingBlocks.dll
+MassTransit.dll
+...
+
+↓
+
+Final stage
+COPY --from=publish /app/publish .
+
+↓
+
+/app
+
+Catalog.API.dll
+BuildingBlocks.dll
+MassTransit.dll
+...
+
+Toàn bộ DLL đã nằm trong container.
+
+6. Runtime ASP.NET nằm ở đâu?
+
+Container cuối cùng kế thừa từ:
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+Image này của Microsoft đã có sẵn:
+
+dotnet runtime
+aspnet runtime
+
+rồi.
+
+Nó giống như máy của bạn đã cài:
+
+dotnet --info
+
+vậy.
+
+Nên container không cần tự cài runtime nữa.
+
+7. Quy trình tổng thể
+Stage 1: build image
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+SDK đầy đủ:
+
+compiler
+restore
+build
+publish
+
+↓
+
+dotnet restore
+
+Tải package.
+
+↓
+
+dotnet build
+
+Biên dịch source thành DLL.
+
+↓
+
+dotnet publish
+
+Tạo thư mục deploy hoàn chỉnh.
+
+Stage 2: runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+
+Image nhẹ hơn nhiều.
+
+Chỉ có:
+
+ASP.NET Runtime
+
+và
+
+COPY --from=publish /app/publish .
+
+copy toàn bộ output publish vào.
+
+Stage 3: chạy
+ENTRYPOINT ["dotnet", "Catalog.API.dll"]
+
+Docker chạy:
+
+dotnet Catalog.API.dll
+
+.NET Runtime đọc:
+
+Catalog.API.dll
+
+rồi tự load tiếp:
+
+BuildingBlocks.dll
+MassTransit.dll
+...
+
+từ thư mục /app.

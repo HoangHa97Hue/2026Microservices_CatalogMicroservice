@@ -13,3 +13,23 @@ this is a comprehensive setup , stimulates a more production like environment al
 
 -Deployment 3 ( bonus)
 deploys all microservices to kubernete, cloud eks,...
+
+
+
+###############################
+Port Mapping Rule
+
+Local Development
+Catalog   -> 5000 / 5050
+Basket    -> 5001 / 5051
+Discount  -> 5002 / 5052
+Ordering  -> 5003 / 5053
+
+Docker Host
+Catalog   -> 6000 / 6060
+Basket    -> 6001 / 6061
+Discount  -> 6002 / 6062
+Ordering  -> 6003 / 6063
+
+Inside Container
+All services -> 8080 / 8081

@@ -14,7 +14,7 @@ namespace Catalog.API.Products.DeleteProduct
         }
     }
     internal class DeleteProductsHandler
-        (IDocumentSession session, ILogger<DeleteProductsHandler> logger)
+        (IDocumentSession session)
         : ICommandHandler<DeleteProductsCommand, DeleteProductsResult>
     {
 
@@ -26,7 +26,6 @@ namespace Catalog.API.Products.DeleteProduct
             {
                 throw new Exception($"Product {command.Id} not found");
             }
-            logger.LogInformation("DeleteProductsHandler called with {@Command}", command);
             //session.Delete<Product>(command.id);
             session.Delete(existing);
             await session.SaveChangesAsync(cancellationToken);
