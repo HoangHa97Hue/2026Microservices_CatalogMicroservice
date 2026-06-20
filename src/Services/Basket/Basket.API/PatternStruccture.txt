@@ -1,0 +1,40 @@
+          New Feature
+               │
+               ▼
+
+┌───────┬──────────────────────────────┐
+│       │              UI              │
+│       ├──────────────────────────────┤
+│       │         Application          │
+│ V     ├──────────────────────────────┤
+│ e     │           Domain             │
+│ r     ├──────────────────────────────┤
+│ t     │       Infrastructure         │
+│ i     │                              │
+│ c     │                              │
+│ a     │                              │
+│ l     │                              │
+│       │                              │
+│ S     │                              │
+│ l     │                              │
+│ i     │                              │
+│ c     │                              │
+│ e     │                              │
+└───────┴──────────────────────────────┘
+
+Verticale slice architect
+-đúng là phải 1 class nó chứa tất cả => nhưng để dễ đọc thì nên tách thằng bussniess logic (application) và presentation ra làm hai lớp :
++ handler L chứa business logic
++ endpoint : presentation UI
+==> applied verticals architect in folder levels (not class levels)      
+ps:
++Feature folder (Basket)
+inside future folder, we have :
++ usecase folder : contains all usecases of the feature ( get shopping cart items, store shopping cart items, delete shopping cart items)
+
+2) 
+Repository pattern: tách tầng xử lý dữ liệu ra khỏi tầng business logic, giúp cho code dễ bảo trì và test hơn
+CQRS pattern
+Mediator pattern
+DI
+Minimal API

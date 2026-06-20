@@ -1,0 +1,60 @@
+
+1) Structure
+
+Shopping cart
+
+   1
+||                                   =====>>> BasketCheckout Event
+\/  n
+
+ShoppingCart Item
+
+2) Rest API Enpoints of Basket Microservices
+Method		Request URL					Description
+Get			/api/baskets/{userId}		Get shopping cart items	
+Post		/api/baskets				Store (upsert- insert or update) shopping cart items
+Post		/api/baskets/checkout		Checkout basket and publish event to RabbitMQ
+Delete		/api/baskets/{userId}		Delete shopping cart with items
+
+2) Application usecase for Basket Microservices
+- Get shopping cart items
+-Store (upsert- insert or update) shopping cart items
+- Delete shopping cart with items
+
+2.1 ) grpc basket operations
+when store basket, will send a grpc request to discount microservices to get discount amount for each item in the shopping cart, then calculate the total price after discount and store it in the shopping cart
+- why use grpc for this operation?
++ grpc is a high performance, open source and universal RPC framework that can run in any environment. It is designed for low latency and high throughput communication between microservices.
+In this case, using grpc allows the basket microservice to efficiently communicate with the discount microservice to get the discount amount for each item in the shopping cart,
+which can improve the overall performance of the application.
+
+2.2) Async Basket Operations
+Checkout basket and publish event to RabbitMQ, then the order microservice will subscribe to this event and process the order.
+
+3) Knowledges 
+Hiểu hơn về GRPC tại sao lại nhanh và được ứng dụng nhiều hơn trong call giữa service nội bộ to service nội bộ với các event VD: service có thể call service rất nhiều lần , 
+dẫn đến nếu call bằng rest/http1 thì sẽ tốn tài nguyên và chậm ( vì nó dùng json làm payload mà điều này khiến cho data quá nhiều field dư thừa, đọc key, convert làm chậm,
+đồng thời các request phải làm tuần tự , vì mỗi request là 1 connection nên lâu ) . Trong khi đó GRPC ( nó dùng protobuf tức là theo schema có sẵn, byte được gửi ngay giúp 
+convert được liền chứ không như json phải convert ...., 1 connection có thể stream nhiều result của nhiều request 1 lần, tăng tốc độ . ĐỒng thời payload chỉ đơn giản như amount, 
+percent (header chỉ 1 vài field cố định)nên nó đỡ phức tạp hơn rất nhiều )
+ 
+Đặc điểm của call nội bộ:
+Tần suất cao (mỗi request user có thể kéo theo nhiều call nội bộ).
+Payload thường nhỏ (ID, số lượng, giá, discount…).
+Cần latency thấp, ổn định, dễ kiểm soát vì chạy trong mạng nội bộ (kubernetes, docker network, VPC…).
+Vì vậy gRPC thường được ưu tiên cho “east–west traffic”.
+ 
+Client gọi Basket.API: “thêm sản phẩm A, số lượng 2”
+Basket.API cần tính giá hiển thị/tạm tính:
+giá gốc
+thuế/ship
+discount theo sản phẩm / theo user / theo campaign
+Để lấy discount, Basket.API gọi Discount service.
+Điểm quan trọng: hành động “add/update/remove item” có thể diễn ra rất nhiều lần (mỗi user thao tác nhiều, và hệ thống có nhiều user). Mỗi thao tác lại kéo theo 1 call sang Discount 
+(hoặc nhiều call nếu logic phức tạp).
+=> Khi số lượng call nội bộ tăng mạnh, chênh lệch “mỗi call tiết kiệm vài ms + ít CPU hơn” sẽ cộng dồn thành:
+giảm latency tổng,
+giảm CPU/Memory,
+tăng throughput,
+giảm chi phí hạ tầng.
+Đó là lý do người ta nhấn mạnh “gọi thường xuyên” thì lợi ích gRPC rõ hơn.

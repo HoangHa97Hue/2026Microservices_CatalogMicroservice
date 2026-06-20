@@ -10,7 +10,20 @@ services:
       - "5432:5432" #the left 5432 is : we will redirecting the 5432 to our local environment
     volumes:
       - postgres_catalog:/var/lib/postgresql/data   # container will insert data into this volume in local => restart or remove container it will get the data inserted into volume before
-# after defining the PostgresSQL override configuration, => should configure connection string in aoolicationsetting.json in catalog.API project
+# after defining the PostgresSQL override configuration, => should configure connection string in applicationsetting.json in catalog.API project
+
+  basketdb:
+    container_name: basketdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=BasketDb
+    restart: always
+    ports:
+      - "5433:5432" #the left 5432 is : we will redirecting the 5432 to our local environment
+    volumes:
+      - postgres_basket:/var/lib/postgresql/data
+
   catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
