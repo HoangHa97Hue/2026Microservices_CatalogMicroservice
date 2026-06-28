@@ -1,0 +1,9 @@
+The client sends a request with using HTTP protocol and waits for a response from service
+The syncronous communication protocols can be HTTP or HTTPS
+Request /response communication with HTTP and Rest PRotocol ( extends gRPC and GraphQL)
+- REST HTTP APIS when exposing from microservices
+-gRPC APIs when communicate internal microservices
+-GraphQL APIs when structured flexible data in microservices
+-WebSockets APIs when real-time bi-direcitional communicatior
+
+==> gRPC should be the primary choice for direct syncronous communication between backend microservice

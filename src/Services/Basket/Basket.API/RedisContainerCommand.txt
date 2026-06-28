@@ -1,0 +1,12 @@
+# redis-cli
+127.0.0.1:6379> ping
+PONG
+127.0.0.1:6379> set key value
+OK
+127.0.0.1:6379> get key
+"value"
+127.0.0.1:6379> set name hoangha
+OK
+127.0.0.1:6379> get name
+"hoangha"
+127.0.0.1:6379> 

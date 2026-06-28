@@ -33,8 +33,26 @@ inside future folder, we have :
 + usecase folder : contains all usecases of the feature ( get shopping cart items, store shopping cart items, delete shopping cart items)
 
 2) 
-Repository pattern: tách tầng xử lý dữ liệu ra khỏi tầng business logic, giúp cho code dễ bảo trì và test hơn
-CQRS pattern
-Mediator pattern
-DI
-Minimal API
+-Repository pattern: tách tầng xử lý dữ liệu ra khỏi tầng business logic, giúp cho code dễ bảo trì và test hơn
+-CQRS pattern
+-Mediator pattern
+-DI
+-Minimal API
+-proxy pattern: 
+ps: CachedBasketRepository acts as a proxy and forwarding the calls to underlying BasketRepository
+-decorator pattern:  (Using .net Scrutor for implement patterns like Decorator in a clean and manageable way,
+its simplefiles the process of service registration and decoration in ASP Net Core applications)
+=> User Scrutor in Program.cs to first register the base service (BasketRepository) and then apply the decorator(CachedBasketRepository)
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
+ps: Extending the functionality of basketrepository by adding caching logic
+- Trong hệ thống của tôi, Redis được sử dụng làm Distributed Cache
+Cache nằm ở một dịch vụ dùng chung:
+
+API 1 ─┐
+API 2 ─┼── Redis
+API 3 ─┘
+
+Tất cả instance truy cập cùng một dữ liệu cache.
+
+ps: Memory cache là cache cục bộ, chỉ tồn tại trong instance của ứng dụng, không chia sẻ giữa các instance khác nhau. Redis là cache phân tán, có thể chia sẻ dữ liệu giữa nhiều instance của ứng dụng, giúp tăng khả năng mở rộng và độ tin cậy.
