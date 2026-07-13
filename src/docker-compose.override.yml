@@ -9,7 +9,10 @@ services:
     ports:
       - "5432:5432" #the left 5432 is : we will redirecting the 5432 to our local environment
     volumes:
-      - postgres_catalog:/var/lib/postgresql/data   # container will insert data into this volume in local => restart or remove container it will get the data inserted into volume before
+      - postgres_catalog:/var/lib/postgresql/data  
+  # Persist PostgreSQL data in a Docker-managed named volume.
+  # Removing/recreating the container keeps the data.
+  # docker compose down -v removes the volume and its data.
 # after defining the PostgresSQL override configuration, => should configure connection string in applicationsetting.json in catalog.API project
 
   basketdb:
@@ -65,3 +68,21 @@ services:
     depends_on:
       - basketdb
       - distributedcache
+  discount.grpc:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionString__Database= Data Source=discount.db   #add environment cho phan connection string nay  
+    ports:
+      - "6002:8080"
+      - "6062:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - discount_data:/data    #Best practices for  Removing/recreating the container keeps the data.
+
+     # /app  → có thể bị Visual Studio mount khi Debug
+    #/data → Docker named volume riêng

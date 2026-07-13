@@ -1,0 +1,32 @@
+                 gRPC USAGE IN MICROSERVICES COMMUNICATION
+
+┌───────────────────────────────────────────────────────────────────────┐
+│                    gRPC Usage in Microservices                        │
+│                                                                       │
+│                                              ┌─────────────────────┐  │
+│                                              │       PRODUCT       │  │
+│                                              │                     │  │
+│                                              │    [gRPC Server]    │  │
+│                                              └──────────▲──────────┘  │
+│                                                         │             │
+│                                      2. GetProduct      │             │
+│                                      HTTP/2 gRPC Call   │             │
+│                                                         │             │
+│  ┌──────────┐       1. AddItem       ┌──────────────────┴─────┐       │
+│  │          │   HTTP REST API        │      SHOPPING CART     │       │
+│  │  CLIENT  │ ─────────────────────► │                        │       │
+│  │          │                        │      [gRPC Client]     │       │
+│  └──────────┘                        └──────────────────┬─────┘       │
+│                                                       │              │
+│                                      3. GetDiscount   │              │
+│                                      HTTP/2 gRPC Call │              │
+│                                                       ▼              │
+│                                              ┌─────────────────────┐ │
+│                                              │      DISCOUNT       │ │
+│                                              │                     │ │
+│                                              │    [gRPC Server]    │ │
+│                                              └─────────────────────┘ │
+│                                                                       │
+│      Inter-service communication giữa các backend microservice       │
+│                 sử dụng gRPC để tăng hiệu suất.                       │
+└───────────────────────────────────────────────────────────────────────┘

@@ -1,0 +1,18 @@
+sẽ dùng hàm  automigration , để
+đầu tiên tạo addmigration với những thay đổi của dbcontext,
+sau đó khi run app , hàm add migration này sẽ add nhưng migration vào và khởi tạo dbsqllite nếu chưa có .
+
+
+vẫn sẽ phải add migration bằng tay khi thay đổi 
+
+Sửa entity
+    ↓
+Add-Migration
+    ↓
+File migration được tạo
+    ↓
+Chạy ứng dụng
+    ↓
+MigrateAsync tự apply vào database
+
+không cần chạy updata database

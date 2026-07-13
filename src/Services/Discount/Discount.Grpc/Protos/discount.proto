@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option csharp_namespace = "Discount.Grpc.Protos";
+
+service DiscountProtoService {
+  rpc GetDiscount (GetDiscountRequest) returns (DiscountModel);
+  rpc CreateDiscount (CreateDiscountRequest) returns (DiscountModel);
+  rpc UpdateDiscount (UpdateDiscountRequest) returns (DiscountModel);
+  rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+message GetDiscountRequest {
+  string productId = 1;
+}
+
+message DiscountModel {
+  string id = 1;   //field number/tag is 1
+  string productId = 2; //field number/tag is 2
+  string productName = 3; //field number/tag is 3
+  string description = 4; //field number/tag is 4
+  double amount = 5; //field number/tag is 5
+}
+
+message CreateDiscountRequest{
+	DiscountModel discount = 1;
+}
+
+message UpdateDiscountRequest{
+	DiscountModel discount = 1;
+}
+
+message DeleteDiscountRequest {
+  string id = 1;
+}
+
+message DeleteDiscountResponse {
+  bool success = 1;
+}
+
+
+// Field numbers such as 1, 2, 3 are identifiers, not default values.
+// Both client and server use these numbers to identify fields during
+// serialization and deserialization.
+//
+// Protobuf sends compact numeric tags instead of full field names.
+// Example: field 3 represents product_name.
+//
+// A value such as "Laptop" may be encoded as:
+// 1A 06 4C 61 70 74 6F 70
+// 1A = field number 3 + string wire type
+// 06 = string length
+// remaining bytes = UTF-8 value "Laptop"
+//
+// Field numbers must be unique inside the same message.
+// Do not change or reuse field numbers after the API is published.
