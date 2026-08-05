@@ -21,6 +21,7 @@ namespace Basket.API.Data
 
         public async Task<Guid> StoreBasket(ShoppingCart cart, CancellationToken cancellationToken = default)
         {
+            //getdiscount before storing the basket
             var basket = await repository.StoreBasket(cart, cancellationToken);
             //var cacheOptions = new DistributedCacheEntryOptions
             //{

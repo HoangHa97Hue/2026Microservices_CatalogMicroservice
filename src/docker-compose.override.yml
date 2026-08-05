@@ -57,6 +57,7 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__Database=Server=basketdb;Port=5432;Database=BasketDb;User Id=postgres;Password=postgres;Include Error Detail=true  # basketdb lay theo the basketdb container name, mac du no co port 5433:5432 nhung trong container thi van la 5432 vi khac ten container db voi catalogdb nen khong bi conflict port 5432
       - ConnectionStrings__Redis=distributedcache:6379
+      - ConnectionStrings__DiscountGrpc=discount.grpc:8081
     ports:
       - "6001:8080"
       - "6061:8081"

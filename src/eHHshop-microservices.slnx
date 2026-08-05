@@ -2,6 +2,13 @@
   <Folder Name="/BuildingBlocks/">
     <Project Path="BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj" Id="1ed3f0df-45c2-4e97-a65c-dc870e0658d5" />
   </Folder>
+  <Folder Name="/Issues/">
+    <File Path="ErrorSentHTTPSToContainer_Analysis.md" />
+  </Folder>
+  <Folder Name="/Knowledges/">
+    <File Path="CleanArchitecture.md" />
+    <File Path="docker-compose-networking-port-mapping-notes.md" />
+  </Folder>
   <Folder Name="/Services/" />
   <Folder Name="/Services/Basket/">
     <Project Path="Services/Basket/Basket.API/Basket.API.csproj" Id="255e7e60-dc0e-439d-ab9a-43647468872f" />
